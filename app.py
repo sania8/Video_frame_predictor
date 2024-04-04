@@ -2,6 +2,10 @@ import streamlit as st
 import zipfile
 import os
 from PIL import Image
+#set app name
+
+st.set_page_config(page_title="Video_frame_predictor")
+
 # Set favicon
 st.set_page_config(
         page_title="Hello world",
