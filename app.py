@@ -51,7 +51,7 @@ def main():
         st.markdown('''<p style="font-size:20px;">If uploading multiple videos, compress them into a zip file before uploading</p>''' ,unsafe_allow_html=True )
     st.write('The model takes in videos as input and returns the predicted frames by learning using sequence-to-sequence learning.')
     st.image('second.png', width=400)
-    st.markdown('''<p style=font-size:20px;">Upload your Videos</p>''' , unsafe_allow_html=True )
+    
     uploaded_file = st.file_uploader("Upload Video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if uploaded_file is not None:
         with st.spinner("Uploading..."):
