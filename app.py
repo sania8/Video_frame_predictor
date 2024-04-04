@@ -52,7 +52,7 @@ def main():
     st.write('The model takes in videos as input and returns the predicted frames by learning using sequence-to-sequence learning.')
     st.image('second.png', width=400)
     
-    uploaded_file = st.file_uploader("Upload Video(s)", type=["mp4", "avi", "mov"], accept_multiple_files=True)
+    uploaded_file = st.file_uploader("", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if uploaded_file is not None:
         with st.spinner("Uploading..."):
             # Create a temporary directory to store uploaded files
