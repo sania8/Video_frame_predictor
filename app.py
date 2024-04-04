@@ -69,6 +69,6 @@ def main():
                 [Download the predicted frames](./uploaded_videos.zip)
                 """
             )
-            st.markdown('<p id="footer" style="color:#8B4000;"><b>Developed at Murthy Labs</b></p>', unsafe_allow_html=True)
+            st.markdown('<p id="footer" style="text-align: center; color:#8B4000;"><b>Developed at Murthy Labs</b></p>', unsafe_allow_html=True)
 if __name__ == "__main__":
     main()
