@@ -1,9 +1,6 @@
 import streamlit as st
 import zipfile
 import os
-import cv2
-import shutil
-import base64
 from PIL import Image
 #set app name
 
@@ -12,24 +9,6 @@ st.set_page_config(
         page_title="Video_frame_predictor",
         page_icon="chart_with_upwards_trend"
     )
-def extract_frames(uploaded_file, output_path):
-    video_bytes = uploaded_file.read()
-    video_path = os.path.join(output_path, "uploaded_video.mp4")
-    with open(video_path, "wb") as f:
-        f.write(video_bytes)
-
-    cap = cv2.VideoCapture(video_path)
-    success, image = cap.read()
-    count = 0
-    while success:
-        frame_path = os.path.join(output_path, f"frame_{count}.jpg")
-        cv2.imwrite(frame_path, image)  # Save frame as JPEG file
-        st.image(Image.open(frame_path), caption=f"Frame {count + 1}")  # Display frame
-        success, image = cap.read()
-        count += 1
-    cap.release()
-
-    return count
 #link the fontawsome 
 css_example = '''
 <!-- Import Font Awesome CSS -->
@@ -73,45 +52,24 @@ def main():
     st.write('The model takes in videos as input and returns the predicted frames by learning using sequence-to-sequence learning.')
     st.image('second.png', width=400)
     
-    uploaded_file = st.file_uploader("", type=["mp4", "avi", "mov"])
-    # Initialize frames_extracted flag
-    frames_extracted = False
+    uploaded_file = st.file_uploader("", type=["mp4", "avi", "mov"], accept_multiple_files=True)
     if uploaded_file is not None:
-        st.write("Video uploaded successfully!")
-        if st.button("Extract Frames"):
-            with st.spinner("Extracting frames..."):
-                # Create temporary directory to store frames
-                temp_dir = "temp_frames"
-                os.makedirs(temp_dir, exist_ok=True)
-
-                # Extract frames from uploaded video and display them
-                num_frames = extract_frames(uploaded_file, temp_dir)
-                
-                # Set flag to indicate frames have been extracted
-                frames_extracted = True
-
-    # Display download button if frames have been extracted
-    if frames_extracted:
-        st.success("Frames extracted successfully!")
-        if st.button("Download Frames"):
-            # Create a directory to store frames
-            frames_dir = "extracted_frames"
-            os.makedirs(frames_dir, exist_ok=True)
-            # Move extracted frames to the directory
-            for file in os.listdir(temp_dir):
-                shutil.move(os.path.join(temp_dir, file), frames_dir)
-            # Create a compressed file from the directory
-            shutil.make_archive(frames_dir, 'zip', frames_dir)
-            # Read the compressed file
-            with open(f"{frames_dir}.zip", "rb") as f:
-                zip_bytes = f.read()
-            # Download the compressed file
-            b64 = base64.b64encode(zip_bytes).decode()
-            href = f'<a href="data:file/zip;base64,{b64}" download="extracted_frames.zip">Download extracted frames</a>'
-            st.markdown(href, unsafe_allow_html=True)
-            # Remove the directory and compressed file
-            shutil.rmtree(frames_dir)
-            os.remove(f"{frames_dir}.zip")
-    st.markdown('<p id="footer" style="text-align: center; color:#8B4000;"><b>Developed at Murthy Labs</b></p>', unsafe_allow_html=True)
+        with st.spinner("Uploading..."):
+            # Create a temporary directory to store uploaded files
+            temp_dir = "temp_videos"
+            os.makedirs(temp_dir, exist_ok=True)
+            for i, file in enumerate(uploaded_file):
+                with open(os.path.join(temp_dir, f"video_{i}.mp4"), "wb") as f:
+                    f.write(file.getbuffer())
+            with zipfile.ZipFile("uploaded_videos.zip", "w") as zipf:
+                for file in os.listdir(temp_dir):
+                    zipf.write(os.path.join(temp_dir, file), arcname=file)
+            st.markdown(
+                """
+                [Download the predicted frames](./uploaded_videos.zip)
+                """
+            )
+            st.markdown('<p id="footer" style="text-align: center; color:#8B4000;"><b>Developed at Murthy Labs</b></p>', unsafe_allow_html=True)
 if __name__ == "__main__":
     main()
+ 
